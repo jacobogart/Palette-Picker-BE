@@ -127,27 +127,28 @@ app.post("/api/v1/palettes", (req, res) => {
     });
 });
 
-app.put('/api/v1/projects/:id', (req,res) => {
+app.put("/api/v1/projects/:id", (req, res) => {
   const project_name = req.body.name;
-  const {id} = req.params;
+  const { id } = req.params;
   if (!project_name) {
     res.status(422).json({
       error: `Project was not updated. Please include a project name`
     });
   } else {
-    database('projects').where({ id })
-    .update({ project_name })
-    .then(result => {
-      if(!result) {
-        res.status(404).json({ error: `No project found with id of ${id}` });
-      } else {
-        res.status(204)
-      }
-    })
-
+    database("projects")
+      .where({ id })
+      .update({ project_name })
+      .then(result => {
+        if (!result) {
+          res.status(404).json({ error: `No project found with id of ${id}` });
+        } else {
+          res.status(204);
+        }
+      })
+      .catch(error => {
+        res.status(500).json({ error });
+      });
   }
-})
-
-
+});
 
 module.exports = app;
