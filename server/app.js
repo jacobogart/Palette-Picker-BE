@@ -49,4 +49,21 @@ app.get("/api/v1/projects/:id", (req, res) => {
     });
 });
 
+app.get("/api/v1/palettes/:id", (req, res) => {
+  const { id } = req.param;
+  database("palettes")
+    .where({ id })
+    .select()
+    .then(palette => {
+      if (palette.length) {
+        res.status(200).json(palette[0]);
+      } else {
+        res.status(404).json({ error: `No palette found with id of ${id}` });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ error });
+    });
+});
+
 module.exports = app;
