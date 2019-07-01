@@ -6,6 +6,29 @@ const database = require("knex")(configuration);
 
 app.use(express.json());
 
+const paletteParamChecker = (palette, res) => {
+  let hasAllParams = true;
+  const requiredParameters = [
+    "palette_name",
+    "color1",
+    "color2",
+    "color3",
+    "color4",
+    "color5",
+    "project_id"
+  ];
+
+  for (let requiredParameter of requiredParameters) {
+    if (!palette[requiredParameter]) {
+      hasAllParams = false;
+      return res.status(422).json({
+        error: `Palette was not added. Please include ${requiredParameter}`
+      });
+    }
+  }
+  return hasAllParams;
+};
+
 app.get("/", (req, res) => {
   res.status(200).send("HELLOO");
 });
@@ -86,45 +109,30 @@ app.post("/api/v1/projects", (req, res) => {
 
 app.post("/api/v1/palettes", (req, res) => {
   const newPalette = req.body;
-  const requiredParameters = [
-    "palette_name",
-    "color1",
-    "color2",
-    "color3",
-    "color4",
-    "color5",
-    "project_id"
-  ];
-
-  for (let requiredParameter of requiredParameters) {
-    if (!newPalette[requiredParameter]) {
-      res.status(422).json({
-        error: `Palette was not added. Please include a ${requiredParameter}`
+  if (paletteParamChecker(newPalette, res)) {
+    database("projects")
+      .where({ id: newPalette.project_id })
+      .select("id")
+      .then(projectID => {
+        if (!projectID) {
+          res
+            .status(404)
+            .json({ error: `No project found with id of ${projectID}` });
+        } else {
+          database("palettes")
+            .insert(newPalette, "id")
+            .then(newID => {
+              res.status(201).json({ id: newID[0] });
+            })
+            .catch(error => {
+              res.status(500).json({ error });
+            });
+        }
+      })
+      .catch(error => {
+        res.status(500).json({ error });
       });
-    }
   }
-  database("projects")
-    .where({ id: newPalette.project_id })
-    .select("id")
-    .then(projectID => {
-      if (!projectID) {
-        res
-          .status(404)
-          .json({ error: `No project found with id of ${projectID}` });
-      } else {
-        database("palettes")
-          .insert(newPalette, "id")
-          .then(newID => {
-            res.status(201).json({ id: newID[0] });
-          })
-          .catch(error => {
-            res.status(500).json({ error });
-          });
-      }
-    })
-    .catch(error => {
-      res.status(500).json({ error });
-    });
 });
 
 app.put("/api/v1/projects/:id", (req, res) => {
@@ -149,6 +157,26 @@ app.put("/api/v1/projects/:id", (req, res) => {
         res.status(500).json({ error });
       });
   }
+});
+
+app.put("/api/v1/palettes/:id", (req, res) => {
+  const palette = req.body;
+  const { id } = req.params;
+  if(paletteParamChecker(palette, res)) {
+    database("palettes")
+      .where({ id })
+      .update({ palette })
+      .then(result => {
+        if (!result) {
+          res.status(404).json({ error: `No palette was found with id of ${id}` });
+        } else {
+          res.status(204);
+        }
+      })
+      .catch(error => {
+        res.status(500).json({ error });
+      });
+    }
 });
 
 module.exports = app;
