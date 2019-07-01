@@ -66,4 +66,19 @@ app.get("/api/v1/palettes/:id", (req, res) => {
     });
 });
 
+app.post('/api/v1/projects', (req, res) => {
+  const project_name = req.body.name
+  if(!project_name) {
+    res.status(422).json({error: `Project was not created. Please include a project name`})
+  } else {
+    database('projects').insert({project_name}, 'id')
+      .then(id => {
+        res.status(201).json({id: id[0]})
+      })
+      .catch(error => {
+        res.status(500).json({ error });
+      })
+  }
+})
+
 module.exports = app;
