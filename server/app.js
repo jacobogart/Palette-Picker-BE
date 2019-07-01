@@ -154,7 +154,6 @@ app.put("/api/v1/projects/:id", (req, res) => {
 app.put("/api/v1/palettes/:id", (req, res) => {
   const palette = req.body;
   const { id } = req.params;
-  console.log(palette);
   if (paletteParamChecker(palette, res)) {
     database("palettes")
       .where({ id })
