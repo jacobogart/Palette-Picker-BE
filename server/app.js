@@ -179,4 +179,34 @@ app.put("/api/v1/palettes/:id", (req, res) => {
     }
 });
 
+app.delete('/api/v1/projects/:id', (req,res) => {
+  const {id} = req.params;
+  database('projects').where({id}).del()
+  .then(result => {
+    if(result) {
+      res.status(204).send()
+    } else {
+      res.status(404).json({error: `Nothing was deleted. Unable to find project with id of ${id}.`})
+    }
+  })
+  .catch(error => {
+    res.status(500).json({ error });
+  })
+});
+
+app.delete('/api/v1/palettes/:id', (req,res) => {
+  const {id} = req.params;
+  database('palettes').where({id}).del()
+  .then(result => {
+    if(result) {
+      res.status(204).send()
+    } else {
+      res.status(404).json({error: `Nothing was deleted. Unable to find palette with id of ${id}.`})
+    }
+  })
+  .catch(error => {
+    res.status(500).json({ error });
+  })
+});
+
 module.exports = app;
