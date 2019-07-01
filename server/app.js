@@ -66,48 +66,88 @@ app.get("/api/v1/palettes/:id", (req, res) => {
     });
 });
 
-app.post('/api/v1/projects', (req, res) => {
+app.post("/api/v1/projects", (req, res) => {
   const project_name = req.body.name;
-  if(!project_name) {
-    res.status(422).json({error: `Project was not created. Please include a project name`})
+  if (!project_name) {
+    res.status(422).json({
+      error: `Project was not created. Please include a project name`
+    });
   } else {
-    database('projects').insert({project_name}, 'id')
+    database("projects")
+      .insert({ project_name }, "id")
       .then(id => {
-        res.status(201).json({id: id[0]})
+        res.status(201).json({ id: id[0] });
       })
       .catch(error => {
         res.status(500).json({ error });
-      })
+      });
   }
 });
 
-app.post('/api/v1/palettes', (req, res)=> {
+app.post("/api/v1/palettes", (req, res) => {
   const newPalette = req.body;
-  const requiredParameters = ['palette_name', 'color1', 'color2', 'color3', 'color4', 'color5', 'project_id'];
+  const requiredParameters = [
+    "palette_name",
+    "color1",
+    "color2",
+    "color3",
+    "color4",
+    "color5",
+    "project_id"
+  ];
 
-  for(let requiredParameter of requiredParameters) {
+  for (let requiredParameter of requiredParameters) {
     if (!newPalette[requiredParameter]) {
-      res.status(422).json({ error: `Palette was not added. Please include a ${requiredParameter}`})
+      res.status(422).json({
+        error: `Palette was not added. Please include a ${requiredParameter}`
+      });
     }
   }
-  database('projects').where({ id: newPalette.project_id}).select('id')
-  .then(projectID => {
-    if(!projectID) {
-      res.status(404).json({error: `No project found with id of ${projectID}`});
-    } else {
-      database('palettes').insert(newPalette, 'id')
-      .then(newID => {
-        res.status(201).json({ id: newID[0] })
-      })
-      .catch(error => {
-        res.status(500).json({ error });
-      })
-    }
-  })
-  .catch(error => {
-    res.status(500).json({ error });
-  })
+  database("projects")
+    .where({ id: newPalette.project_id })
+    .select("id")
+    .then(projectID => {
+      if (!projectID) {
+        res
+          .status(404)
+          .json({ error: `No project found with id of ${projectID}` });
+      } else {
+        database("palettes")
+          .insert(newPalette, "id")
+          .then(newID => {
+            res.status(201).json({ id: newID[0] });
+          })
+          .catch(error => {
+            res.status(500).json({ error });
+          });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ error });
+    });
+});
 
+app.put('/api/v1/projects/:id', (req,res) => {
+  const project_name = req.body.name;
+  const {id} = req.params;
+  if (!project_name) {
+    res.status(422).json({
+      error: `Project was not updated. Please include a project name`
+    });
+  } else {
+    database('projects').where({ id })
+    .update({ project_name })
+    .then(result => {
+      if(!result) {
+        res.status(404).json({ error: `No project found with id of ${id}` });
+      } else {
+        res.status(204)
+      }
+    })
+
+  }
 })
+
+
 
 module.exports = app;
