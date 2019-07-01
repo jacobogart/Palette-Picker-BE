@@ -56,7 +56,7 @@ app.get("/api/v1/palettes", (req, res) => {
 });
 
 app.get("/api/v1/projects/:id", (req, res) => {
-  const { id } = req.param;
+  const { id } = req.params;
   database("projects")
     .where({ id })
     .select()
@@ -73,7 +73,7 @@ app.get("/api/v1/projects/:id", (req, res) => {
 });
 
 app.get("/api/v1/palettes/:id", (req, res) => {
-  const { id } = req.param;
+  const { id } = req.params;
   database("palettes")
     .where({ id })
     .select()
@@ -110,27 +110,19 @@ app.post("/api/v1/projects", (req, res) => {
 app.post("/api/v1/palettes", (req, res) => {
   const newPalette = req.body;
   if (paletteParamChecker(newPalette, res)) {
-    database("projects")
-      .where({ id: newPalette.project_id })
-      .select("id")
-      .then(projectID => {
-        if (!projectID) {
-          res
-            .status(404)
-            .json({ error: `No project found with id of ${projectID}` });
-        } else {
-          database("palettes")
-            .insert(newPalette, "id")
-            .then(newID => {
-              res.status(201).json({ id: newID[0] });
-            })
-            .catch(error => {
-              res.status(500).json({ error });
-            });
-        }
+    database("palettes")
+      .insert(newPalette, "id")
+      .then(newID => {
+        res.status(201).json({ id: newID[0] });
       })
       .catch(error => {
-        res.status(500).json({ error });
+        if (error.code === "23503") {
+          res
+            .status(404)
+            .json({ error: `No project found with id of ${newPalette.project_id}` });
+        } else {
+          res.status(500).json({ error });
+        }
       });
   }
 });
@@ -150,7 +142,7 @@ app.put("/api/v1/projects/:id", (req, res) => {
         if (!result) {
           res.status(404).json({ error: `No project found with id of ${id}` });
         } else {
-          res.status(204);
+          res.status(204).send();
         }
       })
       .catch(error => {
@@ -162,51 +154,62 @@ app.put("/api/v1/projects/:id", (req, res) => {
 app.put("/api/v1/palettes/:id", (req, res) => {
   const palette = req.body;
   const { id } = req.params;
-  if(paletteParamChecker(palette, res)) {
+  console.log(palette);
+  if (paletteParamChecker(palette, res)) {
     database("palettes")
       .where({ id })
-      .update({ palette })
+      .update({ ...palette })
       .then(result => {
         if (!result) {
-          res.status(404).json({ error: `No palette was found with id of ${id}` });
+          res
+            .status(404)
+            .json({ error: `No palette was found with id of ${id}` });
         } else {
-          res.status(204);
+          res.status(204).send();
         }
       })
       .catch(error => {
         res.status(500).json({ error });
       });
-    }
+  }
 });
 
-app.delete('/api/v1/projects/:id', (req,res) => {
-  const {id} = req.params;
-  database('projects').where({id}).del()
-  .then(result => {
-    if(result) {
-      res.status(204).send()
-    } else {
-      res.status(404).json({error: `Nothing was deleted. Unable to find project with id of ${id}.`})
-    }
-  })
-  .catch(error => {
-    res.status(500).json({ error });
-  })
+app.delete("/api/v1/projects/:id", (req, res) => {
+  const { id } = req.params;
+  database("projects")
+    .where({ id })
+    .del()
+    .then(result => {
+      if (result) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({
+          error: `Nothing was deleted. Unable to find project with id of ${id}.`
+        });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ error });
+    });
 });
 
-app.delete('/api/v1/palettes/:id', (req,res) => {
-  const {id} = req.params;
-  database('palettes').where({id}).del()
-  .then(result => {
-    if(result) {
-      res.status(204).send()
-    } else {
-      res.status(404).json({error: `Nothing was deleted. Unable to find palette with id of ${id}.`})
-    }
-  })
-  .catch(error => {
-    res.status(500).json({ error });
-  })
+app.delete("/api/v1/palettes/:id", (req, res) => {
+  const { id } = req.params;
+  database("palettes")
+    .where({ id })
+    .del()
+    .then(result => {
+      if (result) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({
+          error: `Nothing was deleted. Unable to find palette with id of ${id}.`
+        });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ error });
+    });
 });
 
 module.exports = app;
