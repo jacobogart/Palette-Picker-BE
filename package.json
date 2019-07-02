@@ -1,0 +1,35 @@
+{
+  "name": "palette-picker-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "knexfile.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jest": "^24.8.0",
+    "knex": "^0.18.1",
+    "pg": "^7.11.0",
+    "random-hex-color": "^1.0.1",
+    "supertest": "^4.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "babel-jest": "^24.5.0",
+    "nodemon": "^1.19.1"
+  },
+  "scripts": {
+    "test": "jest --watchAll",
+    "start": "nodemon server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacobogart/Palette-Picker-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacobogart/Palette-Picker-BE/issues"
+  },
+  "homepage": "https://github.com/jacobogart/Palette-Picker-BE#readme"
+}

@@ -1,27 +1,36 @@
-
 module.exports = {
-
   development: {
-    client: 'pg',
-    connection: 'postres://localhost/palettepicker',
-    migrations: { 
-      directory: './db/migrations'
+    client: "pg",
+    connection: "postres://localhost/palettepicker",
+    migrations: {
+      directory: "./db/migrations"
     },
     seeds: {
-      directory: './db/seeds/dev'
+      directory: "./db/seeds/dev"
     },
     useNullAsDefault: true
   },
 
   production: {
-    client: 'pg',
+    client: "pg",
     connection: process.env.DATABASE_URL + `?ssl=true`,
     migrations: {
-      directory: './db/migrations'
+      directory: "./db/migrations"
     },
     seeds: {
-      directory: './db/seeds/dev'
+      directory: "./db/seeds/dev"
     }
-  }
+  },
 
+  test: {
+    client: "pg",
+    connection: "postgres://localhost/palettepicker_test",
+    migrations: {
+      directory: "./db/migrations"
+    },
+    seeds: {
+      directory: "./db/seeds/test"
+    },
+    useNullAsDefault: true
+  }
 };
