@@ -1,10 +1,11 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
 const environment = process.env.NODE_ENV || "development";
 const configuration = require("../knexfile")[environment];
 const database = require("knex")(configuration);
 
-app.use(express.json());
+app.use(bodyParser.json());
 
 const paletteParamChecker = (palette, res) => {
   let hasAllParams = true;
@@ -30,7 +31,7 @@ const paletteParamChecker = (palette, res) => {
 };
 
 app.get("/", (req, res) => {
-  res.status(200).send("HELLOO");
+  res.status(200).json({message: 'Palette Picker BE'});
 });
 
 app.get("/api/v1/projects", (req, res) => {
@@ -90,7 +91,7 @@ app.get("/api/v1/palettes/:id", (req, res) => {
 });
 
 app.post("/api/v1/projects", (req, res) => {
-  const project_name = req.body.name;
+  const { project_name } = req.body;
   if (!project_name) {
     res.status(422).json({
       error: `Project was not created. Please include a project name`
@@ -128,7 +129,7 @@ app.post("/api/v1/palettes", (req, res) => {
 });
 
 app.put("/api/v1/projects/:id", (req, res) => {
-  const project_name = req.body.name;
+  const { project_name } = req.body;
   const { id } = req.params;
   if (!project_name) {
     res.status(422).json({
