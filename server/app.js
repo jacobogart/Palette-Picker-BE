@@ -64,7 +64,7 @@ app.get("/api/v1/projects/:id", (req, res) => {
     .then(project => {
       if (project.length) {
         res.status(200).json(project[0]);
-      } else {
+      }  else {
         res.status(404).json({ error: `No project found with id of ${id}` });
       }
     })
