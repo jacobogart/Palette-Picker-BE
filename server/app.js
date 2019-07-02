@@ -7,7 +7,7 @@ const database = require("knex")(configuration);
 
 app.use(bodyParser.json());
 
-const paletteParamChecker = (palette, res) => {
+const paletteParamChecker = (palette, res, word) => {
   let hasAllParams = true;
   const requiredParameters = [
     "palette_name",
@@ -23,7 +23,7 @@ const paletteParamChecker = (palette, res) => {
     if (!palette[requiredParameter]) {
       hasAllParams = false;
       return res.status(422).json({
-        error: `Palette was not added. Please include ${requiredParameter}`
+        error: `Palette was not ${word}. Please include ${requiredParameter}`
       });
     }
   }
@@ -35,7 +35,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/v1/projects", (req, res) => {
+  const { name } = req.query;
   database("projects")
+    .where("project_name", "like", `%${name || ''}%`)
     .select()
     .then(projects => {
       res.status(200).json(projects);
@@ -110,7 +112,7 @@ app.post("/api/v1/projects", (req, res) => {
 
 app.post("/api/v1/palettes", (req, res) => {
   const newPalette = req.body;
-  if (paletteParamChecker(newPalette, res)) {
+  if (paletteParamChecker(newPalette, res, 'added')) {
     database("palettes")
       .insert(newPalette, "id")
       .then(newID => {
@@ -155,7 +157,7 @@ app.put("/api/v1/projects/:id", (req, res) => {
 app.put("/api/v1/palettes/:id", (req, res) => {
   const palette = req.body;
   const { id } = req.params;
-  if (paletteParamChecker(palette, res)) {
+  if (paletteParamChecker(palette, res, 'updated')) {
     database("palettes")
       .where({ id })
       .update({ ...palette })

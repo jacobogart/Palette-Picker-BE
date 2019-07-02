@@ -21,7 +21,9 @@
   "scripts": {
     "test": "jest --forceExit",
     "test:watch": "jest --watchAll",
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "migrate-test": "knex migrate:latest --env=test",
+    "seed-test": "knex seed:run --env=test"
   },
   "repository": {
     "type": "git",
