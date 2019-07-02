@@ -97,5 +97,35 @@ describe('Server', () => {
     });
   });
 
-  
+  describe('PUT /projects/:id', () => {
+    it('should update the appropriate entry in the DB', async () => {
+      const projectToUpdate = await database('projects').first();
+      projectToUpdate.project_name = 'My Updated Project';
+      const { id } = projectToUpdate
+      const res = await request(app).put(`/api/v1/projects/${id}`).send(projectToUpdate);
+
+      const project = await database('projects').where({ id }).first();
+
+      expect(res.status).toEqual(204);
+      expect(project.project_name).toEqual(projectToUpdate.project_name);
+    });
+  });
+
+  describe("PUT /palettes/:id", () => {
+    it("should update the appropriate entry in the DB", async () => {
+      const paletteToUpdate = await database("palettes").first();
+      paletteToUpdate.palette_name = "My Updated Palette";
+      const { id } = paletteToUpdate;
+      const res = await request(app)
+        .put(`/api/v1/palettes/${id}`)
+        .send(paletteToUpdate);
+
+      const palette = await database("palettes")
+        .where({ id })
+        .first();
+
+      expect(res.status).toEqual(204);
+      expect(palette.palette_name).toEqual(paletteToUpdate.palette_name);
+    });
+  });
 });

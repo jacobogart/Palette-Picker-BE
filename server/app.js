@@ -128,7 +128,7 @@ app.post("/api/v1/palettes", (req, res) => {
 });
 
 app.put("/api/v1/projects/:id", (req, res) => {
-  const project_name = req.body.name;
+  const { project_name } = req.body;
   const { id } = req.params;
   if (!project_name) {
     res.status(422).json({
