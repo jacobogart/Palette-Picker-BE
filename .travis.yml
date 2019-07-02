@@ -1,12 +1,11 @@
 language: node_js
 node_js:
   - "node"
-
-# add postgres?
 services:
   - postgresql
-# create our DB?
 before_script:
   - psql -c 'CREATE DATABASE palettepicker_test;' -U postgres
-# migrate/seed our DB?
-# deploy to Heroku?
+  - npm run migrate-test
+  - npm run seed-test
+notifications:
+  email: false
