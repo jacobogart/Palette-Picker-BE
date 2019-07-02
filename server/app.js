@@ -35,7 +35,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/v1/projects", (req, res) => {
+  const { name } = req.query;
   database("projects")
+    .where("project_name", "like", `%${name || ''}%`)
     .select()
     .then(projects => {
       res.status(200).json(projects);
