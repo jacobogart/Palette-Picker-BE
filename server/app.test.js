@@ -12,11 +12,9 @@ describe('Server', () => {
   describe('init', () => {
     it('should return a 200 status', async () => {
       const res = await request(app).get('/');
+      const { message } = res.body;
       expect(res.status).toEqual(200);
+      expect(message).toEqual('Palette Picker BE');
     });
   });
-
-  // describe('GET /projects', () => {
-
-  // });
 });

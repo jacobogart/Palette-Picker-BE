@@ -30,7 +30,7 @@ const paletteParamChecker = (palette, res) => {
 };
 
 app.get("/", (req, res) => {
-  res.status(200).send("HELLOO");
+  res.status(200).json({message: 'Palette Picker BE'});
 });
 
 app.get("/api/v1/projects", (req, res) => {
