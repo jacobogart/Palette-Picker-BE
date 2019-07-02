@@ -170,6 +170,27 @@ describe("Server", () => {
       expect(res.status).toEqual(204);
       expect(project.project_name).toEqual(projectToUpdate.project_name);
     });
+
+    it('should return a 422 error if the project does not have a name', async () => {
+      const res = await request(app)
+        .put(`/api/v1/projects/1`)
+        .send({});
+
+      expect(res.status).toEqual(422);
+      expect(res.body.error).toEqual('Project was not updated. Please include a project name');
+    });
+
+    it('should return a 404 if the project does not exist', async () => {
+      const projectToUpdate = await database("projects").first();
+      projectToUpdate.id = 1;
+      const { id } = projectToUpdate;
+      const res = await request(app)
+        .put(`/api/v1/projects/${id}`)
+        .send(projectToUpdate);
+
+      expect(res.status).toEqual(404);
+      expect(res.body.error).toEqual('No project found with id of 1');
+    });
   });
 
   describe("PUT /palettes/:id", () => {
@@ -187,6 +208,27 @@ describe("Server", () => {
 
       expect(res.status).toEqual(204);
       expect(palette.palette_name).toEqual(paletteToUpdate.palette_name);
+    });
+
+    it('should return a 422 error if the palette does not have a name', async () => {
+      const res = await request(app)
+        .put(`/api/v1/palettes/1`)
+        .send({});
+
+      expect(res.status).toEqual(422);
+      expect(res.body.error).toEqual('Palette was not updated. Please include palette_name');
+    });
+
+    it("should return a 404 if the palette does not exist", async () => {
+      const paletteToUpdate = await database("palettes").first();
+      paletteToUpdate.id = 1;
+      const { id } = paletteToUpdate;
+      const res = await request(app)
+        .put(`/api/v1/palettes/${id}`)
+        .send(paletteToUpdate);
+
+      expect(res.status).toEqual(404);
+      expect(res.body.error).toEqual("No palette was found with id of 1");
     });
   });
 
@@ -216,6 +258,14 @@ describe("Server", () => {
 
       expect(projectPalettes.length).toEqual(0);
     });
+
+    it("should return a 404 error if no project was deleted", async () => {
+      const response = await request(app).delete(`/api/v1/projects/1`);
+      expect(response.status).toBe(404);
+      expect(response.body.error).toEqual(
+        "Nothing was deleted. Unable to find project with id of 1."
+      );
+    });
   });
 
   describe("DELETE /palettes/:id", () => {
@@ -230,6 +280,14 @@ describe("Server", () => {
 
       expect(res.status).toEqual(204);
       expect(deletedPalette).toEqual(undefined);
+    });
+
+    it("should return a 404 error if no palette was deleted", async () => {
+      const response = await request(app).delete(`/api/v1/palettes/1`);
+      expect(response.status).toBe(404);
+      expect(response.body.error).toEqual(
+        "Nothing was deleted. Unable to find palette with id of 1."
+      );
     });
   });
 });
