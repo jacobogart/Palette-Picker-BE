@@ -30,6 +30,18 @@ describe("Server", () => {
       expect(res.status).toEqual(200);
       expect(projects.length).toEqual(expectedProjects.length);
     });
+
+    it("should query results my name if the param is included", async () => {
+      const expectedProjects = await database("projects")
+        .where("project_name", "like", `%First%`)
+        .select();
+
+      const res = await request(app).get("/api/v1/projects?name=First");
+      const projects = res.body;
+
+      expect(res.status).toEqual(200);
+      expect(projects.length).toEqual(expectedProjects.length);
+    });
   });
 
   describe("GET /palettes", () => {
@@ -96,9 +108,13 @@ describe("Server", () => {
     });
 
     it("should return a status code of 422 if unable to post the project", async () => {
-      const res = await request(app).post("/api/v1/projects").send({});
-      expect(res.status).toEqual(422)
-      expect(res.body.error).toEqual("Project was not created. Please include a project name")
+      const res = await request(app)
+        .post("/api/v1/projects")
+        .send({});
+      expect(res.status).toEqual(422);
+      expect(res.body.error).toEqual(
+        "Project was not created. Please include a project name"
+      );
     });
   });
 
@@ -129,13 +145,16 @@ describe("Server", () => {
       expect(palette.palette_name).toEqual(newPalette.palette_name);
     });
 
-
     it("should return a status code of 422 if unable to post the palette with missing parameters", async () => {
-      const res = await request(app).post("/api/v1/palettes").send({});
-      expect(res.status).toEqual(422)
-      expect(res.body.error).toEqual("Palette was not added. Please include palette_name")
+      const res = await request(app)
+        .post("/api/v1/palettes")
+        .send({});
+      expect(res.status).toEqual(422);
+      expect(res.body.error).toEqual(
+        "Palette was not added. Please include palette_name"
+      );
     });
-    
+
     it("should return a status code of 404 if no project with that id", async () => {
       const mockPalette = {
         palette_name: "My New Palette",
@@ -147,11 +166,12 @@ describe("Server", () => {
         project_id: 1
       };
 
-      const res = await request(app).post("/api/v1/palettes").send(mockPalette);
+      const res = await request(app)
+        .post("/api/v1/palettes")
+        .send(mockPalette);
       expect(res.status).toEqual(404);
       expect(res.body.error).toEqual("No project found with id of 1");
     });
-
   });
 
   describe("PUT /projects/:id", () => {
@@ -171,16 +191,18 @@ describe("Server", () => {
       expect(project.project_name).toEqual(projectToUpdate.project_name);
     });
 
-    it('should return a 422 error if the project does not have a name', async () => {
+    it("should return a 422 error if the project does not have a name", async () => {
       const res = await request(app)
         .put(`/api/v1/projects/1`)
         .send({});
 
       expect(res.status).toEqual(422);
-      expect(res.body.error).toEqual('Project was not updated. Please include a project name');
+      expect(res.body.error).toEqual(
+        "Project was not updated. Please include a project name"
+      );
     });
 
-    it('should return a 404 if the project does not exist', async () => {
+    it("should return a 404 if the project does not exist", async () => {
       const projectToUpdate = await database("projects").first();
       projectToUpdate.id = 1;
       const { id } = projectToUpdate;
@@ -189,7 +211,7 @@ describe("Server", () => {
         .send(projectToUpdate);
 
       expect(res.status).toEqual(404);
-      expect(res.body.error).toEqual('No project found with id of 1');
+      expect(res.body.error).toEqual("No project found with id of 1");
     });
   });
 
@@ -210,13 +232,15 @@ describe("Server", () => {
       expect(palette.palette_name).toEqual(paletteToUpdate.palette_name);
     });
 
-    it('should return a 422 error if the palette does not have a name', async () => {
+    it("should return a 422 error if the palette does not have a name", async () => {
       const res = await request(app)
         .put(`/api/v1/palettes/1`)
         .send({});
 
       expect(res.status).toEqual(422);
-      expect(res.body.error).toEqual('Palette was not updated. Please include palette_name');
+      expect(res.body.error).toEqual(
+        "Palette was not updated. Please include palette_name"
+      );
     });
 
     it("should return a 404 if the palette does not exist", async () => {
