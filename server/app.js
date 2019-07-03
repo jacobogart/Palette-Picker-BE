@@ -48,7 +48,11 @@ app.get("/api/v1/projects", (req, res) => {
 });
 
 app.get("/api/v1/palettes", (req, res) => {
+  const { project_id } = req.query;
   database("palettes")
+    .modify((queryBuilder) => {
+      project_id && queryBuilder.where({ project_id });
+    })
     .select()
     .then(palettes => {
       res.status(200).json(palettes);
