@@ -46,8 +46,10 @@ Status: 200 OK
 `GET /api/v1/palettes`
 
 #### Paramenters
-
-None
+ 
+| Name         | Type     | Description                                |
+| ------------ |--------- | ------------                               |
+| `project_id` | `integer`| Search palettes by thier associated project|
 
 #### Sample Response 
 ```
