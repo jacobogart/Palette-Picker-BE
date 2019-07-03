@@ -1,4 +1,5 @@
 # Palette-Picker-BE
+#### By [Bridgett Coyle](https://github.com/B-Coyle) & [Jacob Bogart](https://github.com/jacobogart)
 
 A RESTful API built with Express and Knex to support the PalettePicker Front-End UI.
 
