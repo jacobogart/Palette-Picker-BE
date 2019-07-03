@@ -54,6 +54,21 @@ describe("Server", () => {
       expect(res.status).toEqual(200);
       expect(palettes.length).toEqual(expectedPalettes.length);
     });
+
+    it("should query results by project_id if the param is included", async () => {
+      const { id } = await database('projects').first().select('id');
+      const expectedPalettes = await database("palettes")
+        .where({ project_id: id })
+        .select();
+
+      const res = await request(app).get(
+        `/api/v1/palettes?project_id=${id}`
+      );
+      const palettes = res.body;
+
+      expect(res.status).toEqual(200);
+      expect(palettes.length).toEqual(expectedPalettes.length);
+    });
   });
 
   describe("GET /projects/:id", () => {
