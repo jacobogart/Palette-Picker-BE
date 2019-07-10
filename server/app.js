@@ -33,7 +33,7 @@ const paletteParamChecker = (palette, res, word) => {
   return hasAllParams;
 };
 
-app.get("/", (req, res) => {
+app.get("/", (request, res) => {
   res.status(200).json({message: 'Palette Picker BE'});
 });
 
